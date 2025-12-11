@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="component_public.PartnerPublicComponent" name="Partner Public Component">
+        <h3>Partner Public Component</h3>
+        <t t-if="props.partnerName">
+            <span>Hello, <t t-esc="props.partnerName"/></span>
+        </t>
+        <div class="row">
+            <t t-foreach="state.partners" t-as="partner" t-key="partner.id">
+                <div class="col-3 mb-3">
+                    <div class="card text-center p-2">
+                        <div class="fw-bold"><t t-esc="partner.name"/></div>
+                        <i class="fa fa-info-circle-o fa-2x mt-2 mb-2"
+                            role="button"
+                            t-on-click="() => showPartnerInfo(partner)"
+                            title="View Info"
+                        />
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

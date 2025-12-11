@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="my_template_simple_component" name="My Simple Component">
+        <t t-call="web.frontend_layout">
+            <div class="container mt-5">
+                <owl-component name="@component_public/components/partner_simple_component/partner_simple_component" 
+                     t-props="{'partnerName': partner_name}" />
+            </div>
+        </t>
+    </template>
+</odoo>
