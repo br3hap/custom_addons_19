@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="mi_modulo_owl.lista_usuarios_accion">
+        <div class="o_lista_usuarios_accion">
+            <div class="o_content">
+                <t t-if="state.cargando">
+                    <div class="text-center p-4">
+                        Cargando usuarios...
+                    </div>
+                </t>
+                
+                <t t-elif="state.error">
+                    <div class="alert alert-danger">
+                        <t t-esc="state.error"/>
+                    </div>
+                </t>
+                
+                <t t-else="">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Login</th>
+                                <th>Email</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.usuarios" t-as="usuario" t-key="usuario.id">
+                                <tr>
+                                    <td><t t-esc="usuario.name"/></td>
+                                    <td><t t-esc="usuario.login"/></td>
+                                    <td><t t-esc="usuario.email"/></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" t-on-click="() => this.mostrarEmail(usuario.email)">
+                                            Ver Email
+                                        </button>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

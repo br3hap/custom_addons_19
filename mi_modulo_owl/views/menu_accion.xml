@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_lista_usuarios" model="ir.actions.client">
+        <field name="name">Lista de Usuarios Owl Component</field>
+        <field name="tag">lista_usuarios</field>
+    </record>
+
+    <menuitem 
+        id="menu_lista_usuarios"
+        name="Lista de Usuarios Owl Component"
+        parent="sale.sale_menu_root"
+        action="action_lista_usuarios"
+        sequence="10"
+    />
+
+    <record id="action_usuarios_controller" model="ir.actions.act_url">
+        <field name="name">Lista Usuarios Controller</field>
+        <field name="url">/usuarios/lista</field>
+        <field name="target">self</field>
+    </record>
+
+    <menuitem 
+        id="menu_usuarios_controller"
+        name="Lista Usuarios Controller"
+        parent="sale.sale_menu_root"
+        action="action_usuarios_controller"
+        sequence="20"
+    />
+</odoo>
