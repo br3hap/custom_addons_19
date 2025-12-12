@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="yape_form" name="Yape Payment Form">
+        <div class="yape-payment-form">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Pagar con Yape</h4>
+                    <p>Escanea el código QR con tu app Yape</p>
+                    <div class="yape-qr-container text-center">
+                        <img t-if="yape_qr_code" t-att-src="yape_qr_code" class="img-fluid" style="max-width: 200px;"/>
+                        <div t-else="" class="alert alert-info">
+                            Generando código QR...
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="payment-details">
+                        <h5>Detalles del Pago</h5>
+                        <p><strong>Monto:</strong> S/ <t t-esc="amount"/></p>
+                        <p><strong>Referencia:</strong> <t t-esc="reference"/></p>
+                    </div>
+                    <div class="yape-instructions mt-3">
+                        <h6>Instrucciones:</h6>
+                        <ol>
+                            <li>Abre tu app Yape</li>
+                            <li>Selecciona "Yapear"</li>
+                            <li>Escanea el código QR</li>
+                            <li>Confirma el pago</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>
