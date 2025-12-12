@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form_culqi" model="ir.ui.view">
+        <field name="name">payment.provider.form.culqi</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='provider_credentials']" position="after">
+                <group name="culqi_credentials" invisible="code != 'culqi'">
+                    <field name="culqi_public_key" password="False"/>
+                    <field name="culqi_secret_key" password="True"/>
+                    <field name="culqi_environment"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

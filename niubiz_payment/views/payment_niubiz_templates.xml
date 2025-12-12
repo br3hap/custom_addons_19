@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="niubiz_form" name="Niubiz Payment Form">
+        <div class="niubiz-payment-form">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>Pagar con Niubiz</h4>
+                    <p>Ingresa los datos de tu tarjeta de crédito o débito</p>
+                    
+                    <div class="payment-details mb-3">
+                        <h5>Detalles del Pago</h5>
+                        <p><strong>Monto:</strong> S/ <t t-esc="amount"/></p>
+                        <p><strong>Referencia:</strong> <t t-esc="reference"/></p>
+                    </div>
+
+                    <div id="niubiz-container">
+                        <!-- El formulario de Niubiz se cargará aquí -->
+                    </div>
+
+                    <div class="niubiz-instructions mt-3">
+                        <h6>Tarjetas Aceptadas:</h6>
+                        <div class="d-flex">
+                            <span class="badge badge-info mr-2">Visa</span>
+                            <span class="badge badge-info mr-2">Mastercard</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Cargar el SDK de Niubiz
+                var script = document.createElement('script');
+                script.src = '<t t-esc="api_url"/>/api.ecommerce/v2/ecommerce.js';
+                script.onload = function() {
+                    initNiubizPayment();
+                };
+                document.head.appendChild(script);
+            });
+
+            function initNiubizPayment() {
+                try {
+                    VisanetCheckout.configure({
+                        sessiontoken: '<t t-esc="session_token"/>',
+                        channel: 'web',
+                        merchantid: '<t t-esc="niubiz_merchant_id"/>',
+                        purchasenumber: '<t t-esc="reference"/>',
+                        amount: '<t t-esc="amount"/>',
+                        expirationminutes: '20',
+                        timeouturl: '<t t-esc="return_url"/>',
+                        merchantlogo: '',
+                        formbuttoncolor: '#0066CC',
+                        action: '<t t-esc="return_url"/>',
+                        complete: function(params) {
+                            // Redirigir al controlador de retorno
+                            window.location.href = '/payment/niubiz/return?' + 
+                                'reference=<t t-esc="reference"/>&amp;' +
+                                'transactionToken=' + params.transactionToken + '&amp;' +
+                                'purchaseNumber=' + params.purchaseNumber;
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error inicializando Niubiz:', error);
+                    alert('Error al cargar el formulario de pago. Por favor, intenta nuevamente.');
+                }
+            }
+        </script>
+    </template>
+</odoo>

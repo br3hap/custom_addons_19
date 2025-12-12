@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="culqi_form" name="Culqi Payment Form">
+        <div class="culqi-payment-form">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <h4>Pagar con Culqi</h4>
+                    <p>Ingresa los datos de tu tarjeta de forma segura</p>
+                    
+                    <div class="payment-details mb-3">
+                        <div class="alert alert-info">
+                            <strong>Monto a pagar:</strong> 
+                            <span t-if="currency_code == 'PEN'">S/ </span>
+                            <span t-else="">$ </span>
+                            <t t-esc="amount"/>
+                            <br/>
+                            <strong>Referencia:</strong> <t t-esc="reference"/>
+                        </div>
+                    </div>
+
+                    <form id="culqi-form" class="needs-validation" novalidate="true">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="card-number">Número de Tarjeta</label>
+                                <input type="text" class="form-control" id="card-number" 
+                                       placeholder="1234 5678 9012 3456" maxlength="19" required="true"/>
+                                <div class="invalid-feedback">
+                                    Ingresa un número de tarjeta válido
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="expiry-month">Mes</label>
+                                <select class="form-control" id="expiry-month" required="true">
+                                    <option value="">MM</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="expiry-year">Año</label>
+                                <select class="form-control" id="expiry-year" required="true">
+                                    <option value="">YYYY</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="cvv">CVV</label>
+                                <input type="text" class="form-control" id="cvv" 
+                                       placeholder="123" maxlength="4" required="true"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="cardholder-name">Nombre del Titular</label>
+                                <input type="text" class="form-control" id="cardholder-name" 
+                                       placeholder="Como aparece en la tarjeta" required="true"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="cardholder-email">Email</label>
+                                <input type="email" class="form-control" id="cardholder-email" 
+                                       t-att-value="partner_email" required="true"/>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" id="pay-button">
+                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            Pagar Ahora
+                        </button>
+                    </form>
+
+                    <div class="culqi-security mt-3">
+                        <small class="text-muted">
+                            <i class="fa fa-lock"></i> 
+                            Tus datos están protegidos con encriptación SSL de 256 bits
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://checkout.culqi.com/js/v4"></script>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Configurar Culqi
+                Culqi.publicKey = '<t t-esc="culqi_public_key"/>';
+                
+                // Llenar años
+                const currentYear = new Date().getFullYear();
+                const yearSelect = document.getElementById('expiry-year');
+                for (let i = 0; i &lt; 20; i++) {
+                    const option = document.createElement('option');
+                    option.value = currentYear + i;
+                    option.textContent = currentYear + i;
+                    yearSelect.appendChild(option);
+                }
+
+                // Formatear número de tarjeta
+                document.getElementById('card-number').addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                    e.target.value = formattedValue;
+                });
+
+                // Manejar envío del formulario
+                document.getElementById('culqi-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const payButton = document.getElementById('pay-button');
+                    const spinner = payButton.querySelector('.spinner-border');
+                    
+                    payButton.disabled = true;
+                    spinner.classList.remove('d-none');
+                    
+                    // Crear token con Culqi
+                    Culqi.createToken();
+                });
+
+                // Callback de Culqi
+                function culqi() {
+                    if (Culqi.token) {
+                        // Token creado exitosamente, procesar pago
+                        fetch('/payment/culqi/process', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                token_id: Culqi.token.id,
+                                reference: '<t t-esc="reference"/>'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = '<t t-esc="return_url"/>';
+                            } else {
+                                alert('Error: ' + (data.error || 'Error desconocido'));
+                                resetPayButton();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error procesando el pago');
+                            resetPayButton();
+                        });
+                    } else {
+                        // Error en la creación del token
+                        alert('Error: ' + Culqi.error.merchant_message);
+                        resetPayButton();
+                    }
+                }
+
+                function resetPayButton() {
+                    const payButton = document.getElementById('pay-button');
+                    const spinner = payButton.querySelector('.spinner-border');
+                    payButton.disabled = false;
+                    spinner.classList.add('d-none');
+                }
+
+                // Configurar datos de Culqi
+                Culqi.settings({
+                    title: 'Pago con Culqi',
+                    currency: '<t t-esc="currency_code"/>',
+                    description: 'Pago de pedido',
+                    amount: <t t-esc="amount_cents"/>
+                });
+
+                // Asignar callback global
+                window.culqi = culqi;
+            });
+        </script>
+    </template>
+</odoo>
