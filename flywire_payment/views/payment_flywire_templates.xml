@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template simple para Flywire -->
+    <template id="flywire_payment_form" name="Flywire Payment Form">
+        <div class="flywire-payment-form text-center p-3 border rounded">
+            <div class="mb-2">
+                <i class="fa fa-university fa-2x text-primary"/>
+                <h6 class="mt-2">Flywire - Pago Internacional</h6>
+            </div>
+            <p class="text-muted small">Pago seguro para estudiantes internacionales</p>
+        </div>
+    </template>
+
+    <!-- Vista de configuración del proveedor -->
+    <record id="payment_provider_form_flywire" model="ir.ui.view">
+        <field name="name">payment.provider.form.flywire</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='provider_credentials']" position="after">
+                <group invisible="code != 'flywire'" name="flywire_credentials">
+                    <field name="flywire_environment"/>
+                    <field name="flywire_api_key" password="True" invisible="flywire_environment == 'demo'"/>
+                    <field name="flywire_secret_key" password="True" invisible="flywire_environment == 'demo'"/>
+                    <div invisible="flywire_environment != 'demo'" class="alert alert-info">
+                        <p><strong>Modo Demo:</strong> No se requieren credenciales API.</p>
+                        <p>Flywire aparecerá como opción de pago sin funcionalidad real.</p>
+                        <p><strong>Nota:</strong> Asegúrate de que el proveedor esté habilitado y publicado.</p>
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

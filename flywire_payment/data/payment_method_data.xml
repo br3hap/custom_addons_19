@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_flywire" model="payment.provider">
+        <field name="name">Flywire</field>
+        <field name="code">flywire</field>
+        <field name="state">enabled</field>
+        <field name="is_published">True</field>
+        <field name="flywire_environment">demo</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <!-- Método de pago para Flywire -->
+    <record id="payment_method_flywire" model="payment.method">
+        <field name="name">Flywire - Pago Internacional</field>
+        <field name="code">flywire</field>
+        <field name="provider_ids" eval="[(4, ref('payment_provider_flywire'))]"/>
+    </record>
+</odoo>
